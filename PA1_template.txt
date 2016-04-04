@@ -1,0 +1,429 @@
+<html>
+
+<head>
+<style type="text/css">
+.knitr .inline {
+  background-color: #f7f7f7;
+  border:solid 1px #B0B0B0;
+}
+.error {
+	font-weight: bold;
+	color: #FF0000;
+}
+.warning {
+	font-weight: bold;
+}
+.message {
+	font-style: italic;
+}
+.source, .output, .warning, .error, .message {
+	padding: 0 1em;
+  border:solid 1px #F7F7F7;
+}
+.source {
+  background-color: #f5f5f5;
+}
+.rimage .left {
+  text-align: left;
+}
+.rimage .right {
+  text-align: right;
+}
+.rimage .center {
+  text-align: center;
+}
+.hl.num {
+  color: #AF0F91;
+}
+.hl.str {
+  color: #317ECC;
+}
+.hl.com {
+  color: #AD95AF;
+  font-style: italic;
+}
+.hl.opt {
+  color: #000000;
+}
+.hl.std {
+  color: #585858;
+}
+.hl.kwa {
+  color: #295F94;
+  font-weight: bold;
+}
+.hl.kwb {
+  color: #B05A65;
+}
+.hl.kwc {
+  color: #55aa55;
+}
+.hl.kwd {
+  color: #BC5A65;
+  font-weight: bold;
+}
+</style>
+<title>PA1 Markdown Document</title>
+</head>
+
+<body>
+
+<p>##############################################################################
+#
+# First, Set working directory to the .csv file
+#
+
+setwd("F:/Data Science/Reproducible Research/repdata_data_activity")
+
+##############################################################################
+#
+# 1. Code for reading in the dataset and/or processing the data
+#
+##############################################################################
+
+fitbit = read.csv("activity.csv")
+
+#
+#
+# Take a look at the data to see what were dealing with.
+
+str(fitbit)
+
+#'data.frame':	17568 obs. of  3 variables:
+#$ steps   : int  NA NA NA NA NA NA NA NA NA NA ...
+#$ date    : Factor w/ 61 levels "2012-10-01","2012-10-02",..: 1 1 1 1 1 1 1 1 1 1 ...
+#$ interval: int  0 5 10 15 20 25 30 35 40 45 ...
+# Loads of "NA"s to deal with.
+#
+
+head(fitbit)
+
+#steps       date interval
+#1    NA 2012-10-01        0
+#2    NA 2012-10-01        5
+#3    NA 2012-10-01       10
+#4    NA 2012-10-01       15
+#5    NA 2012-10-01       20
+#6    NA 2012-10-01       25
+#
+
+library(plyr)
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+
+###1. What is mean total number of steps taken per day?
+# 
+# Calculate the total number of steps per day.
+<div class="chunk" id="unnamed-chunk-1"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl std">steps</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">tapply</span><span class="hl std">(fitbit</span><span class="hl opt">$</span><span class="hl std">steps, fitbit</span><span class="hl opt">$</span><span class="hl std">date,</span> <span class="hl kwc">FUN</span> <span class="hl std">= sum,</span> <span class="hl kwc">na.rm</span> <span class="hl std">=</span> <span class="hl num">TRUE</span><span class="hl std">)</span>
+<span class="hl std">fitbit</span><span class="hl opt">$</span><span class="hl std">date</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">ymd</span><span class="hl std">(fitbit</span><span class="hl opt">$</span><span class="hl std">date)</span>
+</pre></div>
+</div></div>
+
+##############################################################################
+# 2. What is mean total number of steps taken per day? 
+##############################################################################
+#Calculate and report the mean and median of the total number of steps taken 
+#per day.
+
+mean(steps)
+#[1] 9354.23
+
+median(steps)
+#[1] 10395
+#
+#For this part of the assignment, you can ignore the missing values in the dataset.
+#
+#Calculate the total number of steps taken per day
+#
+#
+<div class="chunk" id="unnamed-chunk-2"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl std">steps</span> <span class="hl kwb">&lt;-</span> <span class="hl std">fitbit</span> <span class="hl opt">%&gt;%</span>
+<span class="hl kwd">filter</span><span class="hl std">(</span><span class="hl opt">!</span><span class="hl kwd">is.na</span><span class="hl std">(steps))</span> <span class="hl opt">%&gt;%</span>
+        <span class="hl kwd">group_by</span><span class="hl std">(date)</span> <span class="hl opt">%&gt;%</span>
+        <span class="hl kwd">summarize</span><span class="hl std">(</span><span class="hl kwc">steps</span> <span class="hl std">=</span> <span class="hl kwd">sum</span><span class="hl std">(steps))</span> <span class="hl opt">%&gt;%</span>
+        <span class="hl std">print</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## Source: local data frame [53 x 2]
+## 
+##          date steps
+##        (time) (int)
+## 1  2012-10-02   126
+## 2  2012-10-03 11352
+## 3  2012-10-04 12116
+## 4  2012-10-05 13294
+## 5  2012-10-06 15420
+## 6  2012-10-07 11015
+## 7  2012-10-09 12811
+## 8  2012-10-10  9900
+## 9  2012-10-11 10304
+## 10 2012-10-12 17382
+## ..        ...   ...
+</pre></div>
+</div></div>
+#
+#Source: local data frame [53 x 2]
+#
+#date steps
+#(time) (int)
+#1  2012-10-02   126
+#2  2012-10-03 11352
+#3  2012-10-04 12116
+#4  2012-10-05 13294
+#5  2012-10-06 15420
+#6  2012-10-07 11015
+#7  2012-10-09 12811
+#8  2012-10-10  9900
+#9  2012-10-11 10304
+#10 2012-10-12 17382
+#..        ...   ...
+#
+# Make a histogram of the total number of steps taken each day
+# I couldn't get "geom_histogram" to work
+# I kept erroring with "Error: Unknown parameters: binwidth, bins, pad"
+# So I improvised with "geom_bar"
+<div class="chunk" id="unnamed-chunk-3"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">ggplot</span><span class="hl std">(steps,</span> <span class="hl kwd">aes</span><span class="hl std">(</span><span class="hl kwc">x</span><span class="hl std">=date,</span> <span class="hl kwc">y</span><span class="hl std">=steps))</span><span class="hl opt">+</span><span class="hl kwd">geom_bar</span><span class="hl std">(</span><span class="hl kwc">stat</span><span class="hl std">=</span><span class="hl str">&quot;identity&quot;</span><span class="hl std">,</span> <span class="hl kwc">fill</span><span class="hl std">=</span><span class="hl str">&quot;Red&quot;</span><span class="hl std">)</span>
+</pre></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-3-1.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" class="plot" /></div><div class="rcode">
+<div class="source"><pre class="knitr r"><span class="hl opt">+</span> <span class="hl kwd">xlab</span><span class="hl std">(</span><span class="hl str">&quot;Dates&quot;</span><span class="hl std">)</span><span class="hl opt">+</span> <span class="hl kwd">ylab</span><span class="hl std">(</span><span class="hl str">&quot;Steps&quot;</span><span class="hl std">)</span><span class="hl opt">+</span> <span class="hl kwd">labs</span><span class="hl std">(</span><span class="hl kwc">title</span><span class="hl std">=</span> <span class="hl str">&quot;Total numbers of Steps per day&quot;</span><span class="hl std">)</span>
+</pre></div>
+<div class="error"><pre class="knitr r">## Error in +xlab(&quot;Dates&quot;): invalid argument to unary operator
+</pre></div>
+</div></div>
+
+##############################################################################
+# 3. What is the average daily activity pattern?
+##############################################################################
+#Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) 
+#and the average number of steps taken, averaged across all days (y-axis)
+<div class="chunk" id="unnamed-chunk-4"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl std">daily</span> <span class="hl kwb">&lt;-</span> <span class="hl std">fitbit</span> <span class="hl opt">%&gt;%</span>
+        <span class="hl kwd">filter</span><span class="hl std">(</span><span class="hl opt">!</span><span class="hl kwd">is.na</span><span class="hl std">(steps))</span> <span class="hl opt">%&gt;%</span>
+        <span class="hl kwd">group_by</span><span class="hl std">(interval)</span> <span class="hl opt">%&gt;%</span>
+        <span class="hl kwd">summarize</span><span class="hl std">(</span><span class="hl kwc">steps</span><span class="hl std">=</span><span class="hl kwd">mean</span><span class="hl std">(steps))</span> <span class="hl opt">%&gt;%</span>
+        <span class="hl std">print</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## Source: local data frame [288 x 2]
+## 
+##    interval     steps
+##       (int)     (dbl)
+## 1         0 1.7169811
+## 2         5 0.3396226
+## 3        10 0.1320755
+## 4        15 0.1509434
+## 5        20 0.0754717
+## 6        25 2.0943396
+## 7        30 0.5283019
+## 8        35 0.8679245
+## 9        40 0.0000000
+## 10       45 1.4716981
+## ..      ...       ...
+</pre></div>
+</div></div>
+
+#Source: local data frame [288 x 2]
+#
+#interval     steps
+#(int)     (dbl)
+#1         0 1.7169811
+#2         5 0.3396226
+#3        10 0.1320755
+#4        15 0.1509434
+#5        20 0.0754717
+#6        25 2.0943396
+#7        30 0.5283019
+#8        35 0.8679245
+#9        40 0.0000000
+#10       45 1.4716981
+#..      ...       ...
+#
+<div class="chunk" id="unnamed-chunk-5"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">plot</span><span class="hl std">(daily,</span> <span class="hl kwc">type</span> <span class="hl std">=</span> <span class="hl str">&quot;l&quot;</span><span class="hl std">,</span> <span class="hl kwc">lty</span><span class="hl std">=</span><span class="hl num">1</span><span class="hl std">,</span> <span class="hl kwc">col</span><span class="hl std">=</span><span class="hl num">4</span><span class="hl std">)</span>
+</pre></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-5-1.png" title="plot of chunk unnamed-chunk-5" alt="plot of chunk unnamed-chunk-5" class="plot" /></div></div>
+#Which 5-minute interval, on average across all the days in the dataset, 
+#contains the maximum number of steps?
+
+daily[which.max(daily$steps), ]$interval
+#[1] 835
+#
+#Calculate and report the total number of missing values in the dataset 
+#(i.e. the total number of rows with NAs)
+<div class="chunk" id="unnamed-chunk-6"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl std">total.missing</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">sum</span><span class="hl std">(</span><span class="hl kwd">is.na</span><span class="hl std">(fitbit))</span>
+<span class="hl std">total.missing</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] 2304
+</pre></div>
+</div></div>
+#[1] 2304
+##############################################################################
+# 4. Inputting Missing Values
+##############################################################################
+# Devise a strategy for filling in all of the missing values in the dataset. 
+# The strategy does not need to be sophisticated. For example, you could use 
+# the mean/median for that day, or the mean for that 5-minute interval, etc.
+# Create a new dataset that is equal to the original dataset but with the 
+# missing data filled in.
+<div class="chunk" id="unnamed-chunk-7"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl std">strategy</span> <span class="hl kwb">&lt;-</span> <span class="hl std">fitbit</span> <span class="hl opt">%&gt;%</span>
+        <span class="hl kwd">group_by</span><span class="hl std">(interval)</span> <span class="hl opt">%&gt;%</span>
+        <span class="hl kwd">mutate</span><span class="hl std">(</span><span class="hl kwc">steps</span> <span class="hl std">=</span> <span class="hl kwd">ifelse</span><span class="hl std">(</span><span class="hl kwd">is.na</span><span class="hl std">(steps),</span> <span class="hl kwd">mean</span><span class="hl std">(steps,</span> <span class="hl kwc">na.rm</span><span class="hl std">=</span><span class="hl num">TRUE</span><span class="hl std">), steps))</span>
+<span class="hl kwd">summary</span><span class="hl std">(strategy)</span>
+</pre></div>
+<div class="output"><pre class="knitr r">##      steps             date               interval     
+##  Min.   :  0.00   Min.   :2012-10-01   Min.   :   0.0  
+##  1st Qu.:  0.00   1st Qu.:2012-10-16   1st Qu.: 588.8  
+##  Median :  0.00   Median :2012-10-31   Median :1177.5  
+##  Mean   : 37.38   Mean   :2012-10-31   Mean   :1177.5  
+##  3rd Qu.: 27.00   3rd Qu.:2012-11-15   3rd Qu.:1766.2  
+##  Max.   :806.00   Max.   :2012-11-30   Max.   :2355.0
+</pre></div>
+</div></div>
+#    steps             date               interval     
+#Min.   :  0.00   Min.   :2012-10-01   Min.   :   0.0  
+#1st Qu.:  0.00   1st Qu.:2012-10-16   1st Qu.: 588.8  
+#Median :  0.00   Median :2012-10-31   Median :1177.5  
+#Mean   : 37.38   Mean   :2012-10-31   Mean   :1177.5  
+#3rd Qu.: 27.00   3rd Qu.:2012-11-15   3rd Qu.:1766.2  
+#Max.   :806.00   Max.   :2012-11-30   Max.   :2355.0  
+#
+#Make a histogram of the total number of steps taken each day
+#
+
+<div class="chunk" id="unnamed-chunk-8"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl std">new.strategy</span> <span class="hl kwb">&lt;-</span> <span class="hl std">strategy</span> <span class="hl opt">%&gt;%</span>
+        <span class="hl kwd">group_by</span><span class="hl std">(date)</span> <span class="hl opt">%&gt;%</span>
+        <span class="hl kwd">summarize</span><span class="hl std">(</span><span class="hl kwc">steps</span> <span class="hl std">=</span> <span class="hl kwd">sum</span><span class="hl std">(steps))</span> <span class="hl opt">%&gt;%</span>
+        <span class="hl std">print</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## Source: local data frame [61 x 2]
+## 
+##          date    steps
+##        (time)    (dbl)
+## 1  2012-10-01 10766.19
+## 2  2012-10-02   126.00
+## 3  2012-10-03 11352.00
+## 4  2012-10-04 12116.00
+## 5  2012-10-05 13294.00
+## 6  2012-10-06 15420.00
+## 7  2012-10-07 11015.00
+## 8  2012-10-08 10766.19
+## 9  2012-10-09 12811.00
+## 10 2012-10-10  9900.00
+## ..        ...      ...
+</pre></div>
+</div></div>
+#Source: local data frame [61 x 2]
+#
+#date    steps
+#(time)    (dbl)
+#1  2012-10-01 10766.19
+#2  2012-10-02   126.00
+#3  2012-10-03 11352.00
+#4  2012-10-04 12116.00
+#5  2012-10-05 13294.00
+#6  2012-10-06 15420.00
+#7  2012-10-07 11015.00
+#8  2012-10-08 10766.19
+#9  2012-10-09 12811.00
+#10 2012-10-10  9900.00
+#..        ...      ...
+# I couldn't get geom_histogram to work
+# I kept erroring with "Error: Unknown parameters: binwidth, bins, pad"
+# So I improvised with "geom_bar"
+<div class="chunk" id="unnamed-chunk-9"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">ggplot</span><span class="hl std">(new.strategy,</span> <span class="hl kwd">aes</span><span class="hl std">(</span><span class="hl kwc">x</span><span class="hl std">=date,</span> <span class="hl kwc">y</span><span class="hl std">=steps))</span><span class="hl opt">+</span><span class="hl kwd">geom_bar</span><span class="hl std">(</span><span class="hl kwc">stat</span><span class="hl std">=</span><span class="hl str">&quot;identity&quot;</span><span class="hl std">,</span>
+<span class="hl kwc">fill</span><span class="hl std">=</span><span class="hl str">&quot;Purple&quot;</span><span class="hl std">)</span><span class="hl opt">+</span> <span class="hl kwd">xlab</span><span class="hl std">(</span><span class="hl str">&quot;Dates&quot;</span><span class="hl std">)</span><span class="hl opt">+</span> <span class="hl kwd">ylab</span><span class="hl std">(</span><span class="hl str">&quot;Imputed Steps&quot;</span><span class="hl std">)</span>
+</pre></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-9-1.png" title="plot of chunk unnamed-chunk-9" alt="plot of chunk unnamed-chunk-9" class="plot" /></div><div class="rcode">
+<div class="source"><pre class="knitr r"><span class="hl opt">+</span> <span class="hl kwd">labs</span><span class="hl std">(</span><span class="hl kwc">title</span><span class="hl std">=</span> <span class="hl str">&quot;Total numbers of Steps per day (missing data imputed)&quot;</span><span class="hl std">)</span>
+</pre></div>
+<div class="error"><pre class="knitr r">## Error in +labs(title = &quot;Total numbers of Steps per day (missing data imputed)&quot;): invalid argument to unary operator
+</pre></div>
+</div></div>
+#Calculate and report the mean and median total number of steps taken per day.
+#
+<div class="chunk" id="unnamed-chunk-10"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl std">fitbit.steps</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">tapply</span><span class="hl std">(strategy</span><span class="hl opt">$</span><span class="hl std">steps, strategy</span><span class="hl opt">$</span><span class="hl std">date,</span> <span class="hl kwc">FUN</span> <span class="hl std">= sum,</span> <span class="hl kwc">na.rm</span> <span class="hl std">=</span> <span class="hl num">TRUE</span><span class="hl std">)</span>
+<span class="hl std">strategy</span><span class="hl opt">$</span><span class="hl std">date</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">ymd</span><span class="hl std">(strategy</span><span class="hl opt">$</span><span class="hl std">date)</span>
+<span class="hl kwd">mean</span><span class="hl std">(fitbit.steps)</span>
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] 10766.19
+</pre></div>
+</div></div>
+# [1] 10766.19
+
+#Do these values differ from the estimates from the first part of the assignment?
+<div class="chunk" id="unnamed-chunk-11"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">mean</span><span class="hl std">(steps)</span><span class="hl opt">==</span><span class="hl kwd">mean</span><span class="hl std">(fitbit.steps)</span>
+</pre></div>
+<div class="warning"><pre class="knitr r">## Warning in mean.default(steps): argument is not numeric or logical:
+## returning NA
+</pre></div>
+<div class="output"><pre class="knitr r">## [1] NA
+</pre></div>
+</div></div>
+#[1] FALSE
+<div class="chunk" id="unnamed-chunk-12"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">median</span><span class="hl std">(steps)</span><span class="hl opt">==</span><span class="hl kwd">median</span><span class="hl std">(fitbit.steps)</span>
+</pre></div>
+<div class="error"><pre class="knitr r">## Error in median.default(steps): need numeric data
+</pre></div>
+</div></div>
+#[1] FALSE
+
+summary(steps)
+#Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#0    6778   10400    9354   12810   21190
+<div class="chunk" id="unnamed-chunk-13"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">summary</span><span class="hl std">(fitbit.steps)</span>
+</pre></div>
+<div class="output"><pre class="knitr r">##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##      41    9819   10770   10770   12810   21190
+</pre></div>
+</div></div>
+#   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#41    9819   10770   10770   12810   21190
+
+#What is the impact of imputing missing data on the estimates of the total 
+#daily number of steps?
+# The summary numbers increased by 41, 3041, 370, 1416, 0, 0 respectively.
+<div class="chunk" id="unnamed-chunk-14"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">summary</span><span class="hl std">(steps)</span> <span class="hl opt">-</span> <span class="hl kwd">summary</span><span class="hl std">(fitbit.steps)</span>
+</pre></div>
+<div class="error"><pre class="knitr r">## Error in summary(steps) - summary(fitbit.steps): non-numeric argument to binary operator
+</pre></div>
+</div></div>
+#Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#-41   -3041    -370   -1416       0       0 
+<div class="chunk" id="unnamed-chunk-15"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">par</span><span class="hl std">(</span><span class="hl kwc">mfrow</span><span class="hl std">=</span><span class="hl kwd">c</span><span class="hl std">(</span><span class="hl num">2</span><span class="hl std">,</span><span class="hl num">1</span><span class="hl std">))</span>
+<span class="hl kwd">hist</span><span class="hl std">(steps,</span><span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;red&quot;</span><span class="hl std">)</span>
+</pre></div>
+<div class="error"><pre class="knitr r">## Error in hist.default(steps, col = &quot;red&quot;): 'x' must be numeric
+</pre></div>
+<div class="source"><pre class="knitr r"><span class="hl kwd">hist</span><span class="hl std">(fitbit.steps,</span><span class="hl kwc">col</span><span class="hl std">=</span><span class="hl str">&quot;purple&quot;</span><span class="hl std">)</span>
+</pre></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-15-1.png" title="plot of chunk unnamed-chunk-15" alt="plot of chunk unnamed-chunk-15" class="plot" /></div></div>
+##############################################################################
+# 5. Are there differences in activity patterns between weekdays and weekends?
+##############################################################################
+#
+#  I need two more variables now, "weekend" and "weekday" using the filled in
+# missing values.
+#
+<div class="chunk" id="unnamed-chunk-16"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl std">dayofweek</span> <span class="hl kwb">&lt;-</span> <span class="hl kwa">function</span><span class="hl std">(</span><span class="hl kwc">date</span><span class="hl std">) {</span>
+        <span class="hl kwa">if</span> <span class="hl std">(</span><span class="hl kwd">weekdays</span><span class="hl std">(</span><span class="hl kwd">as.Date</span><span class="hl std">(date))</span> <span class="hl opt">%in%</span> <span class="hl kwd">c</span><span class="hl std">(</span><span class="hl str">&quot;Saturday&quot;</span><span class="hl std">,</span> <span class="hl str">&quot;Sunday&quot;</span><span class="hl std">)) {</span>
+                <span class="hl str">&quot;weekend&quot;</span>
+        <span class="hl std">}</span> <span class="hl kwa">else</span> <span class="hl std">{</span>
+                <span class="hl str">&quot;weekday&quot;</span>
+        <span class="hl std">}</span>
+<span class="hl std">}</span>
+<span class="hl std">new.strategy</span><span class="hl opt">$</span><span class="hl std">daytype</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">as.factor</span><span class="hl std">(</span><span class="hl kwd">sapply</span><span class="hl std">(new.strategy</span><span class="hl opt">$</span><span class="hl std">date, dayofweek))</span>
+</pre></div>
+</div></div>
+#  Make a time series plot (i.e. type = "l") of the 5-minute interval 
+# (x-axis) and the average number of steps taken, averaged across all days 
+# (y-axis)
+<div class="chunk" id="unnamed-chunk-17"><div class="rcode"><div class="source"><pre class="knitr r"><span class="hl kwd">par</span><span class="hl std">(</span><span class="hl kwc">mfrow</span> <span class="hl std">=</span> <span class="hl kwd">c</span><span class="hl std">(</span><span class="hl num">2</span><span class="hl std">,</span> <span class="hl num">1</span><span class="hl std">))</span>
+<span class="hl kwa">for</span> <span class="hl std">(type</span> <span class="hl kwa">in</span> <span class="hl kwd">c</span><span class="hl std">(</span><span class="hl str">&quot;weekend&quot;</span><span class="hl std">,</span> <span class="hl str">&quot;weekday&quot;</span><span class="hl std">)) {</span>
+        <span class="hl std">steps.type</span> <span class="hl kwb">&lt;-</span> <span class="hl kwd">aggregate</span><span class="hl std">(steps</span> <span class="hl opt">~</span> <span class="hl std">date,</span> <span class="hl kwc">data</span> <span class="hl std">= new.strategy,</span> <span class="hl kwc">subset</span> <span class="hl std">= new.strategy</span><span class="hl opt">$</span><span class="hl std">daytype</span> <span class="hl opt">==</span>
+                <span class="hl std">type,</span> <span class="hl kwc">FUN</span> <span class="hl std">= mean)</span>
+        <span class="hl kwd">plot</span><span class="hl std">(steps.type,</span> <span class="hl kwc">type</span> <span class="hl std">=</span> <span class="hl str">&quot;l&quot;</span><span class="hl std">,</span> <span class="hl kwc">main</span> <span class="hl std">= type)</span>
+<span class="hl std">}</span>
+</pre></div>
+</div><div class="rimage default"><img src="figure/unnamed-chunk-17-1.png" title="plot of chunk unnamed-chunk-17" alt="plot of chunk unnamed-chunk-17" class="plot" /></div></div>
+
+
+</p>
+
+</body>
+</html>
